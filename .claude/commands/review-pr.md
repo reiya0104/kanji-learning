@@ -36,8 +36,8 @@ Closes #XX
 （変更によって影響を受ける機能・ファイル）
 
 ## 確認項目
-- [ ] lint 通過
-- [ ] typecheck 通過
+- [ ] lint 通過（PostToolUse Hook が通過済みなら `[x]` にする）
+- [ ] typecheck 通過（PostToolUse Hook が通過済みなら `[x]` にする）
 - [ ] test 通過
 ```
 
@@ -47,13 +47,14 @@ Closes #XX
 
 ## ステップ5：PR 作成
 
-承認後、以下のコマンドで PR を作成してください：
+承認後、以下のコマンドで PR を作成してください。`--body` にはステップ3で生成した実際のテキストをそのまま展開して渡すこと：
 
 ```bash
 gh pr create \
+  --repo reiya0104/kanji-learning \
   --title "<prefix>: <変更内容>" \
   --body "$(cat <<'EOF'
-（ステップ3のドラフト）
+（ステップ3で生成した description を、ここに直接貼り付ける）
 EOF
 )"
 ```
