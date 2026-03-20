@@ -5,6 +5,14 @@
 # 構造的に防ぐ。ユーザーは settings.local.json でこのフックを上書きできる。
 
 input=$(cat)
+
+# jq がなければインストールを促してスキップ
+if ! command -v jq >/dev/null 2>&1; then
+  echo "WARNING: jq がインストールされていません。pre-no-verify フックが無効です。" >&2
+  echo "インストール: sudo apt-get install jq  または  brew install jq" >&2
+  exit 0
+fi
+
 cmd=$(echo "$input" | jq -r '.tool_input.command // empty' 2>/dev/null)
 
 # コマンドが空またはgit commitでなければスキップ
@@ -18,7 +26,10 @@ first_line=$(echo "$cmd" | head -1)
 prefix=$(echo "$first_line" | sed -E 's/[[:space:]](-m|--message)[[:space:]].*//')
 
 # --no-verify および短縮形 -n をブロック
-if echo "$prefix" | grep -qE '(--no-verify|-n\b)'; then
+# (^|空白) で始まり (空白|$) で終わるトークン単位で判定し、
+# ファイルパス内の "-no" 等を誤検知しないようにする
+# -[a-zA-Z]*n[a-zA-Z]* は -sn や -ns 等の連結フラグも検出する
+if echo "$prefix" | grep -qE '(^|[[:space:]])(--no-verify|-[a-zA-Z]*n[a-zA-Z]*)([[:space:]]|$)'; then
   echo "ERROR: --no-verify / -n は使用不可です。" >&2
   echo "lint/typecheck のエラーを修正してからコミットしてください。" >&2
   exit 2
