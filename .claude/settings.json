@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'f=$(jq -r \".tool_input.file_path // empty\"); if echo \"$f\" | grep -qE \"\\\\.(ts|tsx)$\"; then npm run typecheck 2>&1 | head -50; if [ -f node_modules/.bin/eslint ]; then npm run lint 2>&1 | head -50; else echo \"[lint] eslint not installed (run after RN init)\"; fi; fi'",
+            "statusMessage": "typecheck + lint..."
+          }
+        ]
+      }
+    ]
+  }
+}
