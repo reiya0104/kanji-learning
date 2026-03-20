@@ -1,3 +1,9 @@
+---
+name: commit
+description: 以下の手順でコミットを作成してください。
+user-invocable: true
+---
+
 以下の手順でコミットを作成してください。
 
 ## ステップ1：変更内容の確認
