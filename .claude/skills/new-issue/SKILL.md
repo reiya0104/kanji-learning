@@ -1,3 +1,9 @@
+---
+name: new-issue
+description: GitHub Issue を作成してください。
+user-invocable: true
+---
+
 以下の手順で GitHub Issue を作成してください。
 
 ## ステップ1：情報収集

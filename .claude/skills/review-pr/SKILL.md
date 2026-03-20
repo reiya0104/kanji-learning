@@ -1,3 +1,9 @@
+---
+name: review-pr
+description: 以下の手順でセルフレビューを実施し、PR を作成してください。
+user-invocable: true
+---
+
 以下の手順でセルフレビューを実施し、PR を作成してください。
 
 ## ステップ1：変更内容の把握
