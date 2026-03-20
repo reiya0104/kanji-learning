@@ -37,9 +37,7 @@ if echo "$CHANGED" | grep -q "^src/domain/"; then
 fi
 
 if [ -n "$ERRORS" ]; then
-  echo "品質ゲートに失敗しました。以下のエラーを修正してから完了宣言してください。"
-  echo ""
-  echo -e "$ERRORS"
+  echo -e "品質ゲートに失敗しました。以下のエラーを修正してから完了宣言してください。\n\n${ERRORS}" >&2
   exit 2
 fi
 
