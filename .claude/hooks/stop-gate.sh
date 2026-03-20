@@ -27,7 +27,7 @@ if [ -f "node_modules/.bin/eslint" ]; then
 fi
 
 # domain テスト（src/domain/ に変更がある場合のみ）
-CHANGED=$(git diff --name-only HEAD 2>/dev/null; git diff --name-only 2>/dev/null)
+CHANGED=$(git diff --name-only HEAD 2>/dev/null)
 if echo "$CHANGED" | grep -q "^src/domain/"; then
   if [ -f "node_modules/.bin/jest" ]; then
     if ! out=$(npm test -- --passWithNoTests 2>&1); then
