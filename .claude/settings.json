@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'f=$(jq -r \".tool_input.file_path // empty\"); if echo \"$f\" | grep -qE \"\\\\.(ts|tsx)$\"; then npm run typecheck 2>&1 | head -50; if [ -f node_modules/.bin/eslint ]; then npm run lint 2>&1 | head -50; else echo \"[lint] eslint not installed (run after RN init)\"; fi; fi'",
+            "command": "bash -c 'f=$(jq -r \".tool_input.file_path // empty\") 2>/dev/null || exit 0; echo \"$f\" | grep -qE \"\\\\.(ts|tsx)$\" || exit 0; out=$(npm run typecheck 2>&1); rc=$?; [ $rc -ne 0 ] && echo \"[typecheck] $out\" | head -30; [ -f node_modules/.bin/eslint ] && { out2=$(npm run lint 2>&1); rc2=$?; [ $rc2 -ne 0 ] && echo \"[lint] $out2\" | head -30; } || echo \"[lint] eslint not installed (run after RN init)\"; exit 0'",
             "statusMessage": "typecheck + lint..."
           }
         ]
