@@ -9,3 +9,4 @@ dist/
 *.mobileprovision
 *.orig.*
 web-build/
+coverage/
