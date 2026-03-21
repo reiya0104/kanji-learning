@@ -4,6 +4,6 @@ import App from '../App'
 describe('App', () => {
   it('アプリ名テキストが表示される', () => {
     render(<App />)
-    expect(screen.getByText('漢字学習アプリ')).toBeTruthy()
+    expect(screen.getByText('漢字学習アプリ')).toBeDefined()
   })
 })
