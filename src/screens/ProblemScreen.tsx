@@ -11,9 +11,9 @@ export default function ProblemScreen({ problem, onAnswer }: Props) {
     <View style={styles.container}>
       <Text style={styles.question}>{problem.question}</Text>
       <View style={styles.choices}>
-        {problem.choices.map((choice) => (
+        {problem.choices.map((choice, index) => (
           <TouchableOpacity
-            key={choice}
+            key={index}
             style={styles.choiceButton}
             onPress={() => onAnswer(choice)}
           >
