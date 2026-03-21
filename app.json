@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "kanji-learning",
+    "slug": "kanji-learning",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      "expo-asset",
+      "expo-font"
+    ],
+    "newArchEnabled": true
+  }
+}
