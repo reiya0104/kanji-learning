@@ -30,7 +30,23 @@ prefix=$(echo "$first_line" | sed -E 's/[[:space:]](-m|--message)[[:space:]].*//
 # ファイルパス内の "-no" 等を誤検知しないようにする
 # -[a-zA-Z]*n[a-zA-Z]* は -sn や -ns 等の連結フラグも検出する
 if echo "$prefix" | grep -qE '(^|[[:space:]])(--no-verify|-[a-zA-Z]*n[a-zA-Z]*)([[:space:]]|$)'; then
-  echo "ERROR: --no-verify / -n は使用不可です。" >&2
-  echo "lint/typecheck のエラーを修正してからコミットしてください。" >&2
+  cat >&2 <<'MSG'
+ERROR: --no-verify / -n は使用禁止です。
+
+WHY: フックをスキップすると lint/typecheck エラーを見落としたまま
+     コミットが積み重なり、後から修正コストが跳ね上がります。
+     このプロジェクトでは「フックを通過したコードのみコミット可」を
+     品質ゲートとして運用しています。
+
+FIX: 以下の手順でエラーを解消してからコミットしてください。
+  1. npm run lint      → ESLint エラーを確認・修正
+  2. npm run typecheck → TypeScript エラーを確認・修正
+  3. npm run test      → テストが通ることを確認
+  4. 修正後、通常の git commit を実行する
+
+EXAMPLE:
+  NG: git commit --no-verify -m "fix: ..."
+  OK: git commit -m "fix: ..."
+MSG
   exit 2
 fi
