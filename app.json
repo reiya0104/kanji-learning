@@ -11,9 +11,16 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "ios": {
+      "bundleIdentifier": "com.kanjilearning"
+    },
+    "android": {
+      "package": "com.kanjilearning"
+    },
     "plugins": [
       "expo-asset",
-      "expo-font"
+      "expo-font",
+      "@config-plugins/detox"
     ],
     "newArchEnabled": true
   }

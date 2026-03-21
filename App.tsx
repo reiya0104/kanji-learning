@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native'
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    <View testID="root-screen" style={styles.container}>
       <Text>漢字学習アプリ</Text>
       <StatusBar style="auto" />
     </View>
