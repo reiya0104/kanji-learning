@@ -37,7 +37,7 @@ FIX: 作業ブランチを作成してからコミットしてください。
 
 EXAMPLE:
   NG: (main ブランチで) git commit -m "feat: ..."
-  OK: git checkout -b feat/40-new-issue-dependency-section
+  OK: git checkout -b feat/123-概要
       git commit -m "feat: ..."
 MSG
   exit 2
