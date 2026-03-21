@@ -25,9 +25,8 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      # lint は RN init（eslint インストール）後に有効化する
-      # - name: Lint
-      #   run: npm run lint
+      - name: Lint
+        run: npm run lint
 
       - name: Test
         run: npm run test
