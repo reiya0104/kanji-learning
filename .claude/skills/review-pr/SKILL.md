@@ -89,6 +89,7 @@ Closes #XX
 gh pr create \
   --repo reiya0104/kanji-learning \
   --title "<prefix>: <変更内容>" \
+  --assignee "@me" \
   --body "$(cat <<'EOF'
 （ステップ4で生成した description を、ここに直接貼り付ける）
 EOF

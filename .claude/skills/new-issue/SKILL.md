@@ -40,6 +40,7 @@ gh issue create \
   --title "タイトル" \
   --label "ラベル" \
   --milestone "マイルストーン名" \
+  --assignee "@me" \
   --body $'## 背景\n\n内容\n\n## やること\n\n- [ ] 項目\n\n## 完了条件（DoD）\n\n- [ ] 項目\n\n## スコープ外\n\n- 項目'
 ```
 
