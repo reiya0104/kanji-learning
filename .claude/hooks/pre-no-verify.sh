@@ -19,6 +19,30 @@ cmd=$(echo "$input" | jq -r '.tool_input.command // empty' 2>/dev/null)
 [ -z "$cmd" ] && exit 0
 echo "$cmd" | grep -qE 'git\s+commit\b' || exit 0
 
+# main ブランチへの直接コミットをブロック
+current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+if [ "$current_branch" = "main" ]; then
+  cat >&2 <<'MSG'
+ERROR: main ブランチへの直接コミットは禁止です。
+
+WHY: main への直接コミットはレビューをスキップするため、
+     意図しない変更が混入するリスクがあります。
+     このプロジェクトでは「作業ブランチ → PR → main」を
+     必須フローとして運用しています。
+
+FIX: 作業ブランチを作成してからコミットしてください。
+  1. git checkout -b feat/issue番号-概要
+  2. 変更を加えてコミット
+  3. /commit スキルでコミット・PR 作成
+
+EXAMPLE:
+  NG: (main ブランチで) git commit -m "feat: ..."
+  OK: git checkout -b feat/123-概要
+      git commit -m "feat: ..."
+MSG
+  exit 2
+fi
+
 # git フラグは必ず1行目に現れるため、1行目のみを検査対象とする
 # （ヒアドキュメント等で複数行になる場合でも誤検知しない）
 # さらに -m 以降（コミットメッセージ本文）を除去して検査する
