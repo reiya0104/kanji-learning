@@ -10,3 +10,4 @@ dist/
 *.orig.*
 web-build/
 coverage/
+.claude/worktrees/
