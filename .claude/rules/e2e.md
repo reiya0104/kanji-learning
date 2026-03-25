@@ -7,6 +7,7 @@
 
 ### KVM の有効化（WSL 再起動のたびに必要）
 ```bash
+# Intel CPU の場合。AMD CPU の場合は kvm-intel を kvm-amd に読み替える
 sudo modprobe kvm && sudo modprobe kvm-intel && sudo chmod 666 /dev/kvm
 ```
 

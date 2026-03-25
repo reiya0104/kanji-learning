@@ -21,4 +21,4 @@ New Architecture は Detox 互換性の問題により E2E テスト時は無効
 - WSL 再起動のたびに KVM モジュールの手動ロードが必要（自動化は未対応）
 - ヘッドレス + `swiftshader_indirect` のためテスト実行は実機より遅い
 - New Architecture を無効にしているため、Fabric 固有のバグは E2E で検出できない
-- Expo SDK 53 / RN 0.77+ へのアップグレードで New Architecture を再有効化できる見込み
+- Detox が RN の New Architecture を公式サポートした時点で再有効化を検討する

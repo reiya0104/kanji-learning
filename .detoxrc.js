@@ -23,6 +23,9 @@ module.exports = {
       // expo prebuild 後に android/ ディレクトリが生成される
       binaryPath:
         'android/app/build/outputs/apk/debug/app-debug.apk',
+      // sed で debuggableVariants = [] を注入し、JS バンドルを debug APK に埋め込む。
+      // expo prebuild が生成する build.gradle の `react {` ブロック先頭に挿入する前提。
+      // Expo SDK アップグレード時に build.gradle のフォーマットが変わった場合は要確認。
       build:
         "npx expo prebuild --platform android && sed -i '/react {/a\\    debuggableVariants = []' android/app/build.gradle && cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug",
       reversePorts: [8081],
