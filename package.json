@@ -2,7 +2,7 @@
   "name": "kanji-learning",
   "version": "1.0.0",
   "private": true,
-  "main": "App.tsx",
+  "main": "expo/AppEntry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",

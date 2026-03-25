@@ -11,3 +11,5 @@ dist/
 web-build/
 coverage/
 .claude/worktrees/
+android/
+ios/
