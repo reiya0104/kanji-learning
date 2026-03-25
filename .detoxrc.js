@@ -24,7 +24,7 @@ module.exports = {
       binaryPath:
         'android/app/build/outputs/apk/debug/app-debug.apk',
       build:
-        'npx expo prebuild --platform android && cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug',
+        "npx expo prebuild --platform android && sed -i '/react {/a\\    debuggableVariants = []' android/app/build.gradle && cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug",
       reversePorts: [8081],
     },
   },

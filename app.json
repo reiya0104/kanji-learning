@@ -22,6 +22,6 @@
       "expo-font",
       "@config-plugins/detox"
     ],
-    "newArchEnabled": true
+    "newArchEnabled": false
   }
 }
