@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "test": "jest",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint 'App.tsx' 'src/**/*.{ts,tsx}' 'tests/**/*.ts'",
+    "lint": "eslint 'App.tsx' 'src/**/*.{ts,tsx}' 'tests/**/*.{ts,tsx}'",
     "test:e2e": "detox test -c android.emu.debug",
     "test:e2e:ios": "detox test -c ios.sim.debug",
     "build:e2e": "detox build -c android.emu.debug"
