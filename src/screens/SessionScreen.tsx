@@ -5,6 +5,7 @@ import type { Problem } from '../domain/problem'
 import { getAllProblems } from '../infrastructure/problemRepository'
 import type { SessionScreenProps } from '../navigation/types'
 import { pickSession } from '../usecase/sampleSession'
+import { saveSessionResult } from '../usecase/saveSessionResult'
 import ProblemScreen, { type Feedback } from './ProblemScreen'
 
 const SESSION_SIZE = 10
@@ -28,8 +29,9 @@ export default function SessionScreen({ navigation }: SessionScreenProps) {
     setFeedback({ isCorrect: correct, correctAnswer: currentProblem.correct })
   }
 
-  function handleNext() {
+  async function handleNext() {
     if (currentIndex + 1 >= problems.length) {
+      await saveSessionResult(problems, missedProblemIds)
       navigation.navigate('Result', {
         correctCount,
         missedProblemIds,
