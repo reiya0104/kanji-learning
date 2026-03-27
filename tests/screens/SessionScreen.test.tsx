@@ -48,17 +48,19 @@ describe('SessionScreen', () => {
   })
 
   describe('回答処理', () => {
-    it('回答すると次の問題（2問目）に進む', () => {
+    it('回答して「次へ」を押すと次の問題（2問目）に進む', () => {
       render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
       fireEvent.press(screen.getByText('よみ1'))
+      fireEvent.press(screen.getByText('次へ'))
       expect(screen.getByText('漢字2')).toBeDefined()
       expect(screen.getByText('2 / 10')).toBeDefined()
     })
 
-    it('10問目に回答すると Result 画面へ遷移する', () => {
+    it('10問目に回答して「次へ」を押すと Result 画面へ遷移する', () => {
       render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
       for (let i = 1; i <= 10; i++) {
         fireEvent.press(screen.getByText(`よみ${i}`))
+        fireEvent.press(screen.getByText('次へ'))
       }
       expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
         correctCount: expect.any(Number),
@@ -70,9 +72,12 @@ describe('SessionScreen', () => {
       render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
       // 1問目: 正解、2問目: 不正解、3〜10問目: 正解
       fireEvent.press(screen.getByText('よみ1'))       // 正解
+      fireEvent.press(screen.getByText('次へ'))
       fireEvent.press(screen.getByText('ちがう2a'))    // 不正解
+      fireEvent.press(screen.getByText('次へ'))
       for (let i = 3; i <= 10; i++) {
         fireEvent.press(screen.getByText(`よみ${i}`))  // 正解
+        fireEvent.press(screen.getByText('次へ'))
       }
       expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
         correctCount: 9,
@@ -83,13 +88,62 @@ describe('SessionScreen', () => {
       render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
       // 1問目: 正解、2問目: 不正解、3〜10問目: 正解
       fireEvent.press(screen.getByText('よみ1'))
+      fireEvent.press(screen.getByText('次へ'))
       fireEvent.press(screen.getByText('ちがう2a'))
+      fireEvent.press(screen.getByText('次へ'))
       for (let i = 3; i <= 10; i++) {
         fireEvent.press(screen.getByText(`よみ${i}`))
+        fireEvent.press(screen.getByText('次へ'))
       }
       expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
         missedProblemIds: ['p002'],
       }))
+    })
+  })
+
+  describe('フィードバック表示（2フェーズフロー）', () => {
+    it('正解を選ぶと「正解！」が表示される', () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      fireEvent.press(screen.getByText('よみ1'))
+      expect(screen.getByText('正解！')).toBeDefined()
+    })
+
+    it('不正解を選ぶと「不正解」が表示される', () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      fireEvent.press(screen.getByText('ちがう1a'))
+      expect(screen.getByText('不正解')).toBeDefined()
+    })
+
+    it('不正解を選ぶと正解の読み仮名が表示される', () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      fireEvent.press(screen.getByText('ちがう1a'))
+      expect(screen.getByText('正解：よみ1')).toBeDefined()
+    })
+
+    it('回答後は「次へ」ボタンが表示される', () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      fireEvent.press(screen.getByText('よみ1'))
+      expect(screen.getByText('次へ')).toBeDefined()
+    })
+
+    it('回答前は「次へ」ボタンが表示されない', () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      expect(screen.queryByText('次へ')).toBeNull()
+    })
+
+    it('「次へ」を押すまで次の問題に進まない', () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      fireEvent.press(screen.getByText('よみ1'))
+      expect(screen.queryByText('漢字2')).toBeNull()
+      expect(screen.getByText('漢字1')).toBeDefined()
+    })
+
+    it('次の問題ではフィードバック表示がリセットされる', () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      fireEvent.press(screen.getByText('よみ1'))
+      expect(screen.getByText('正解！')).toBeDefined()
+      fireEvent.press(screen.getByText('次へ'))
+      expect(screen.queryByText('正解！')).toBeNull()
     })
   })
 })
