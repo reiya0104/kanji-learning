@@ -1,4 +1,4 @@
-import { shouldReview, updateRecord } from '../../src/domain/review'
+import { shouldReview, updateRecord, createInitialRecord } from '../../src/domain/review'
 import type { ReviewRecord } from '../../src/domain/review'
 
 const baseRecord: ReviewRecord = {
@@ -21,6 +21,21 @@ describe('shouldReview', () => {
 
   it('missCount が 0 のとき false を返す', () => {
     expect(shouldReview({ ...baseRecord, missCount: 0, consecutiveCorrect: 0 })).toBe(false)
+  })
+})
+
+describe('createInitialRecord', () => {
+  it('missCount: 0, consecutiveCorrect: 0 の ReviewRecord を返す', () => {
+    const record = createInitialRecord('p001')
+    expect(record.problemId).toBe('p001')
+    expect(record.missCount).toBe(0)
+    expect(record.consecutiveCorrect).toBe(0)
+  })
+
+  it('lastAttemptedAt が ISO 8601 形式の文字列である', () => {
+    const record = createInitialRecord('p001')
+    expect(() => new Date(record.lastAttemptedAt).toISOString()).not.toThrow()
+    expect(record.lastAttemptedAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)
   })
 })
 
