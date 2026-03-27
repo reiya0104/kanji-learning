@@ -5,6 +5,11 @@ export type ReviewRecord = {
   lastAttemptedAt: string     // ISO 8601
 }
 
+// 新規 ReviewRecord を作成する
+export function createInitialRecord(problemId: string): ReviewRecord {
+  return { problemId, missCount: 0, consecutiveCorrect: 0, lastAttemptedAt: new Date().toISOString() }
+}
+
 // 再出題すべきか判定する
 export function shouldReview(record: ReviewRecord): boolean {
   return record.missCount >= 1 && record.consecutiveCorrect < 2

@@ -1,14 +1,17 @@
-import { render, screen, fireEvent } from '@testing-library/react-native'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react-native'
 import SessionScreen from '../../src/screens/SessionScreen'
 import { getAllProblems } from '../../src/infrastructure/problemRepository'
 import { pickSession } from '../../src/usecase/sampleSession'
+import { saveSessionResult } from '../../src/usecase/saveSessionResult'
 import type { Problem } from '../../src/domain/problem'
 
 jest.mock('../../src/infrastructure/problemRepository')
 jest.mock('../../src/usecase/sampleSession')
+jest.mock('../../src/usecase/saveSessionResult')
 
 const mockGetAllProblems = getAllProblems as jest.Mock
 const mockPickSession = pickSession as jest.Mock
+const mockSaveSessionResult = saveSessionResult as jest.Mock
 
 const mockNavigate = jest.fn()
 const mockNavigation = { navigate: mockNavigate } as any
@@ -31,6 +34,7 @@ beforeEach(() => {
   jest.clearAllMocks()
   mockGetAllProblems.mockReturnValue(tenProblems)
   mockPickSession.mockReturnValue(tenProblems)
+  mockSaveSessionResult.mockResolvedValue(undefined)
 })
 
 describe('SessionScreen', () => {
@@ -56,19 +60,21 @@ describe('SessionScreen', () => {
       expect(screen.getByText('2 / 10')).toBeDefined()
     })
 
-    it('10問目に回答して「次へ」を押すと Result 画面へ遷移する', () => {
+    it('10問目に回答して「次へ」を押すと Result 画面へ遷移する', async () => {
       render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
       for (let i = 1; i <= 10; i++) {
         fireEvent.press(screen.getByText(`よみ${i}`))
         fireEvent.press(screen.getByText('次へ'))
       }
-      expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
-        correctCount: expect.any(Number),
-        missedProblemIds: expect.any(Array),
-      }))
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
+          correctCount: expect.any(Number),
+          missedProblemIds: expect.any(Array),
+        }))
+      })
     })
 
-    it('正解数が正しく集計されて Result に渡される', () => {
+    it('正解数が正しく集計されて Result に渡される', async () => {
       render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
       // 1問目: 正解、2問目: 不正解、3〜10問目: 正解
       fireEvent.press(screen.getByText('よみ1'))       // 正解
@@ -79,12 +85,14 @@ describe('SessionScreen', () => {
         fireEvent.press(screen.getByText(`よみ${i}`))  // 正解
         fireEvent.press(screen.getByText('次へ'))
       }
-      expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
-        correctCount: 9,
-      }))
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
+          correctCount: 9,
+        }))
+      })
     })
 
-    it('不正解の問題 ID が missedProblemIds に含まれる', () => {
+    it('不正解の問題 ID が missedProblemIds に含まれる', async () => {
       render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
       // 1問目: 正解、2問目: 不正解、3〜10問目: 正解
       fireEvent.press(screen.getByText('よみ1'))
@@ -95,9 +103,46 @@ describe('SessionScreen', () => {
         fireEvent.press(screen.getByText(`よみ${i}`))
         fireEvent.press(screen.getByText('次へ'))
       }
-      expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
-        missedProblemIds: ['p002'],
-      }))
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
+          missedProblemIds: ['p002'],
+        }))
+      })
+    })
+  })
+
+  describe('ReviewRecord 保存', () => {
+    it('最終問題の「次へ」を押したとき saveSessionResult が呼ばれる', async () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      for (let i = 1; i <= 10; i++) {
+        fireEvent.press(screen.getByText(`よみ${i}`))
+        fireEvent.press(screen.getByText('次へ'))
+      }
+      await waitFor(() => {
+        expect(mockSaveSessionResult).toHaveBeenCalledTimes(1)
+      })
+    })
+
+    it('saveSessionResult には problems 全件と missedProblemIds が渡される', async () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      fireEvent.press(screen.getByText('よみ1'))      // 正解
+      fireEvent.press(screen.getByText('次へ'))
+      fireEvent.press(screen.getByText('ちがう2a'))  // 不正解
+      fireEvent.press(screen.getByText('次へ'))
+      for (let i = 3; i <= 10; i++) {
+        fireEvent.press(screen.getByText(`よみ${i}`))
+        fireEvent.press(screen.getByText('次へ'))
+      }
+      await waitFor(() => {
+        expect(mockSaveSessionResult).toHaveBeenCalledWith(tenProblems, ['p002'])
+      })
+    })
+
+    it('中間問題の「次へ」では saveSessionResult が呼ばれない', () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      fireEvent.press(screen.getByText('よみ1'))
+      fireEvent.press(screen.getByText('次へ'))
+      expect(mockSaveSessionResult).not.toHaveBeenCalled()
     })
   })
 
