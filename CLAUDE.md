@@ -17,6 +17,15 @@
 - ADR：docs/adr/
 - レビュールール：.claude/rules/
 
+## iOS 実機デバッグ（Expo Go）
+
+```bash
+REACT_NATIVE_PACKAGER_HOSTNAME=192.168.11.3 npx expo start
+```
+
+iPhone の Expo Go で QR コードをスキャン（または `exp://192.168.11.3:8081` を手動入力）。
+初回セットアップ手順は docs/adr/0006-ios-expo-go-connection.md を参照。
+
 ## 作業前コマンド
 ※ RN init 完了後（フェーズ1以降）に有効
 ```
