@@ -79,12 +79,15 @@ describe('SessionScreen', () => {
       // 1問目: 正解、2問目: 不正解、3〜10問目: 正解
       fireEvent.press(screen.getByText('よみ1'))       // 正解
       fireEvent.press(screen.getByText('次へ'))
-      fireEvent.press(screen.getByText('ちがう2a'))    // 不正解
+      fireEvent.press(screen.getByText('ちがう2a'))    // 不正解 → p002 が末尾に追加される
       fireEvent.press(screen.getByText('次へ'))
       for (let i = 3; i <= 10; i++) {
         fireEvent.press(screen.getByText(`よみ${i}`))  // 正解
         fireEvent.press(screen.getByText('次へ'))
       }
+      // 11問目（p002 の再出題）を不正解（既に reviewProblemIds にあるため再追加なし）
+      fireEvent.press(screen.getByText('ちがう2a'))
+      fireEvent.press(screen.getByText('次へ'))
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
           correctCount: 9,
@@ -97,12 +100,15 @@ describe('SessionScreen', () => {
       // 1問目: 正解、2問目: 不正解、3〜10問目: 正解
       fireEvent.press(screen.getByText('よみ1'))
       fireEvent.press(screen.getByText('次へ'))
-      fireEvent.press(screen.getByText('ちがう2a'))
+      fireEvent.press(screen.getByText('ちがう2a'))    // 不正解 → p002 が末尾に追加される
       fireEvent.press(screen.getByText('次へ'))
       for (let i = 3; i <= 10; i++) {
         fireEvent.press(screen.getByText(`よみ${i}`))
         fireEvent.press(screen.getByText('次へ'))
       }
+      // 11問目（p002 の再出題）を正解
+      fireEvent.press(screen.getByText('よみ2'))
+      fireEvent.press(screen.getByText('次へ'))
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
           missedProblemIds: ['p002'],
@@ -123,17 +129,21 @@ describe('SessionScreen', () => {
       })
     })
 
-    it('saveSessionResult には problems 全件と missedProblemIds が渡される', async () => {
+    it('saveSessionResult には初期10問と missedProblemIds が渡される', async () => {
       render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
       fireEvent.press(screen.getByText('よみ1'))      // 正解
       fireEvent.press(screen.getByText('次へ'))
-      fireEvent.press(screen.getByText('ちがう2a'))  // 不正解
+      fireEvent.press(screen.getByText('ちがう2a'))  // 不正解 → p002 が末尾に追加される
       fireEvent.press(screen.getByText('次へ'))
       for (let i = 3; i <= 10; i++) {
         fireEvent.press(screen.getByText(`よみ${i}`))
         fireEvent.press(screen.getByText('次へ'))
       }
+      // 11問目（p002 の再出題）を正解して Result へ
+      fireEvent.press(screen.getByText('よみ2'))
+      fireEvent.press(screen.getByText('次へ'))
       await waitFor(() => {
+        // 再出題分を除いた初期10問と missedProblemIds が渡される
         expect(mockSaveSessionResult).toHaveBeenCalledWith(tenProblems, ['p002'])
       })
     })
@@ -143,6 +153,66 @@ describe('SessionScreen', () => {
       fireEvent.press(screen.getByText('よみ1'))
       fireEvent.press(screen.getByText('次へ'))
       expect(mockSaveSessionResult).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('初回ミス再出題', () => {
+    it('不正解にした問題はセッション末尾に追加されて再出題される', async () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      // 1問目を不正解
+      fireEvent.press(screen.getByText('ちがう1a'))
+      fireEvent.press(screen.getByText('次へ'))
+      // 2〜10問目を正解で進める
+      for (let i = 2; i <= 10; i++) {
+        fireEvent.press(screen.getByText(`よみ${i}`))
+        fireEvent.press(screen.getByText('次へ'))
+      }
+      // 11問目（再出題）は1問目と同じ漢字
+      expect(screen.getByText('漢字1')).toBeDefined()
+    })
+
+    it('再出題問題には「復習」バッジが表示される', () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      // 1問目を不正解
+      fireEvent.press(screen.getByText('ちがう1a'))
+      fireEvent.press(screen.getByText('次へ'))
+      // 2〜10問目を正解で進める
+      for (let i = 2; i <= 10; i++) {
+        fireEvent.press(screen.getByText(`よみ${i}`))
+        fireEvent.press(screen.getByText('次へ'))
+      }
+      // 再出題画面に「復習」バッジが出る
+      expect(screen.getByTestId('review-badge')).toBeDefined()
+    })
+
+    it('同じ問題を2回ミスしても再出題への追加は1回だけ', async () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      // 1問目を不正解
+      fireEvent.press(screen.getByText('ちがう1a'))
+      fireEvent.press(screen.getByText('次へ'))
+      // 2〜10問目を正解で進める
+      for (let i = 2; i <= 10; i++) {
+        fireEvent.press(screen.getByText(`よみ${i}`))
+        fireEvent.press(screen.getByText('次へ'))
+      }
+      // 再出題（11問目）も不正解
+      fireEvent.press(screen.getByText('ちがう1a'))
+      fireEvent.press(screen.getByText('次へ'))
+      // 12問目は存在しない → Result 画面へ遷移する
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
+          correctCount: expect.any(Number),
+        }))
+      })
+    })
+
+    it('再出題が追加されると進捗の分母が増える', () => {
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      // 1問目を不正解
+      fireEvent.press(screen.getByText('ちがう1a'))
+      fireEvent.press(screen.getByText('次へ'))
+      // 2問目表示時点で分母は 11 になっている
+      expect(screen.getByText('2 / 11')).toBeDefined()
     })
   })
 
