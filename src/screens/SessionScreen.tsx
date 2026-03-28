@@ -11,7 +11,9 @@ import ProblemScreen, { type Feedback } from './ProblemScreen'
 const SESSION_SIZE = 10
 
 export default function SessionScreen({ navigation }: SessionScreenProps) {
-  const [problems] = useState<Problem[]>(() => pickSession(getAllProblems(), SESSION_SIZE))
+  const [initialProblems] = useState<Problem[]>(() => pickSession(getAllProblems(), SESSION_SIZE))
+  const [problems, setProblems] = useState<Problem[]>(() => initialProblems)
+  const [reviewProblemIds, setReviewProblemIds] = useState<Set<string>>(new Set())
   const [currentIndex, setCurrentIndex] = useState(0)
   const [correctCount, setCorrectCount] = useState(0)
   const [missedProblemIds, setMissedProblemIds] = useState<string[]>([])
@@ -25,13 +27,17 @@ export default function SessionScreen({ navigation }: SessionScreenProps) {
       setCorrectCount((c) => c + 1)
     } else {
       setMissedProblemIds((ids) => [...ids, currentProblem.id])
+      if (!reviewProblemIds.has(currentProblem.id)) {
+        setReviewProblemIds((ids) => new Set([...ids, currentProblem.id]))
+        setProblems((prev) => [...prev, currentProblem])
+      }
     }
     setFeedback({ isCorrect: correct, correctAnswer: currentProblem.correct })
   }
 
   async function handleNext() {
     if (currentIndex + 1 >= problems.length) {
-      await saveSessionResult(problems, missedProblemIds)
+      await saveSessionResult(initialProblems, missedProblemIds)
       navigation.navigate('Result', {
         correctCount,
         missedProblemIds,
@@ -47,6 +53,9 @@ export default function SessionScreen({ navigation }: SessionScreenProps) {
       <Text testID="progress-text" style={styles.progress}>
         {currentIndex + 1} / {problems.length}
       </Text>
+      {reviewProblemIds.has(currentProblem.id) && (
+        <Text testID="review-badge">復習</Text>
+      )}
       <ProblemScreen
         problem={currentProblem}
         onAnswer={handleAnswer}
