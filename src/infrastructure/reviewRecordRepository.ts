@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system/legacy'
 import type { ReviewRecord } from '../domain/review'
 
 const RECORDS_FILE = FileSystem.documentDirectory + 'review_records.json'
