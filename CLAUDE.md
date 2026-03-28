@@ -17,6 +17,9 @@
 - ADR：docs/adr/
 - レビュールール：.claude/rules/
 
+## iOS 実機デバッグ（Expo Go）
+手順：docs/adr/0006-ios-expo-go-connection.md
+
 ## 作業前コマンド
 ※ RN init 完了後（フェーズ1以降）に有効
 ```
