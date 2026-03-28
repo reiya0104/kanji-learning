@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system/legacy'
 import {
   getAllRecords,
   getRecord,
@@ -7,7 +7,7 @@ import {
 } from '../../src/infrastructure/reviewRecordRepository'
 import type { ReviewRecord } from '../../src/domain/review'
 
-jest.mock('expo-file-system', () => ({
+jest.mock('expo-file-system/legacy', () => ({
   documentDirectory: 'file:///test/',
   getInfoAsync: jest.fn(),
   readAsStringAsync: jest.fn(),
