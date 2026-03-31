@@ -34,7 +34,7 @@ beforeEach(() => {
   jest.clearAllMocks()
   mockGetAllProblems.mockReturnValue(tenProblems)
   mockPickSession.mockReturnValue(tenProblems)
-  mockSaveSessionResult.mockResolvedValue(undefined)
+  mockSaveSessionResult.mockResolvedValue([])
 })
 
 describe('SessionScreen', () => {
@@ -70,6 +70,7 @@ describe('SessionScreen', () => {
         expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
           correctCount: expect.any(Number),
           missedProblemIds: expect.any(Array),
+          masteredProblemIds: expect.any(Array),
         }))
       })
     })
@@ -91,6 +92,7 @@ describe('SessionScreen', () => {
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
           correctCount: 9,
+          masteredProblemIds: expect.any(Array),
         }))
       })
     })
@@ -112,6 +114,7 @@ describe('SessionScreen', () => {
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
           missedProblemIds: ['p002'],
+          masteredProblemIds: expect.any(Array),
         }))
       })
     })
@@ -153,6 +156,20 @@ describe('SessionScreen', () => {
       fireEvent.press(screen.getByText('よみ1'))
       fireEvent.press(screen.getByText('次へ'))
       expect(mockSaveSessionResult).not.toHaveBeenCalled()
+    })
+
+    it('saveSessionResult が返した masteredProblemIds が Result に渡される', async () => {
+      mockSaveSessionResult.mockResolvedValue(['p001', 'p003'])
+      render(<SessionScreen navigation={mockNavigation} route={mockRoute} />)
+      for (let i = 1; i <= 10; i++) {
+        fireEvent.press(screen.getByText(`よみ${i}`))
+        fireEvent.press(screen.getByText('次へ'))
+      }
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
+          masteredProblemIds: ['p001', 'p003'],
+        }))
+      })
     })
   })
 
@@ -202,6 +219,7 @@ describe('SessionScreen', () => {
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('Result', expect.objectContaining({
           correctCount: expect.any(Number),
+          masteredProblemIds: expect.any(Array),
         }))
       })
     })

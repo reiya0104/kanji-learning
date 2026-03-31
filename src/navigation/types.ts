@@ -6,6 +6,7 @@ export type RootStackParamList = {
   Result: {
     correctCount: number
     missedProblemIds: string[]
+    masteredProblemIds: string[]
   }
 }
 
