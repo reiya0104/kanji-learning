@@ -15,6 +15,11 @@ export function shouldReview(record: ReviewRecord): boolean {
   return record.missCount >= 1 && record.consecutiveCorrect < 2
 }
 
+// 更新前後のレコードを比較して、今回のセッションで苦手フラグが解除されたか判定する
+export function isJustMastered(before: ReviewRecord, after: ReviewRecord): boolean {
+  return before.missCount >= 1 && before.consecutiveCorrect < 2 && after.consecutiveCorrect >= 2
+}
+
 // 回答後にレコードを更新する
 export function updateRecord(record: ReviewRecord, correct: boolean): ReviewRecord {
   if (correct) {

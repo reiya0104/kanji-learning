@@ -37,10 +37,11 @@ export default function SessionScreen({ navigation }: SessionScreenProps) {
 
   async function handleNext() {
     if (currentIndex + 1 >= problems.length) {
-      await saveSessionResult(initialProblems, missedProblemIds)
+      const masteredProblemIds = await saveSessionResult(initialProblems, missedProblemIds)
       navigation.navigate('Result', {
         correctCount,
         missedProblemIds,
+        masteredProblemIds,
       })
     } else {
       setCurrentIndex(currentIndex + 1)

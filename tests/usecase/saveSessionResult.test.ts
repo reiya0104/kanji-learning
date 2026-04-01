@@ -80,4 +80,48 @@ describe('saveSessionResult', () => {
     expect(ids).toContain('p003')
     expect(savedRecords).toHaveLength(3)
   })
+
+  describe('masteredProblemIds の返却', () => {
+    it('consecutiveCorrect 1→2 になった苦手問題の ID を返す', async () => {
+      const existing: ReviewRecord = {
+        problemId: 'p001', missCount: 1, consecutiveCorrect: 1,
+        lastAttemptedAt: '2026-03-27T00:00:00.000Z',
+      }
+      mockGetRecord.mockImplementation((id: string) =>
+        id === 'p001' ? Promise.resolve(existing) : Promise.resolve(null)
+      )
+      const result = await saveSessionResult(problems, []) // p001 正解
+      expect(result).toContain('p001')
+    })
+
+    it('consecutiveCorrect が 2 に届かない問題は含まれない', async () => {
+      const existing: ReviewRecord = {
+        problemId: 'p001', missCount: 1, consecutiveCorrect: 0,
+        lastAttemptedAt: '2026-03-27T00:00:00.000Z',
+      }
+      mockGetRecord.mockImplementation((id: string) =>
+        id === 'p001' ? Promise.resolve(existing) : Promise.resolve(null)
+      )
+      const result = await saveSessionResult(problems, [])
+      expect(result).not.toContain('p001')
+    })
+
+    it('苦手フラグがない問題（missCount=0）は含まれない', async () => {
+      const existing: ReviewRecord = {
+        problemId: 'p001', missCount: 0, consecutiveCorrect: 1,
+        lastAttemptedAt: '2026-03-27T00:00:00.000Z',
+      }
+      mockGetRecord.mockImplementation((id: string) =>
+        id === 'p001' ? Promise.resolve(existing) : Promise.resolve(null)
+      )
+      const result = await saveSessionResult(problems, [])
+      expect(result).not.toContain('p001')
+    })
+
+    it('解除がない場合は空配列を返す', async () => {
+      mockGetRecord.mockResolvedValue(null)
+      const result = await saveSessionResult(problems, ['p001', 'p002', 'p003'])
+      expect(result).toEqual([])
+    })
+  })
 })

@@ -12,6 +12,7 @@ Accepted
 
 1. **初回ミス** → 当日セッション内で再出題する
 2. **2回連続正解** → 苦手フラグを解除する
+3. **苦手フラグ解除通知** → `isJustMastered(before, after)` で判定し、ResultScreen で「苦手克服！」セクションを表示する
 
 実装：`src/domain/review.ts`
 テスト：`tests/domain/review.test.ts`

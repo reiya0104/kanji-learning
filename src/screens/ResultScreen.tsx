@@ -3,13 +3,24 @@ import type { ResultScreenProps } from '../navigation/types'
 import { getAllProblems } from '../infrastructure/problemRepository'
 
 export default function ResultScreen({ route, navigation }: ResultScreenProps) {
-  const { correctCount, missedProblemIds } = route.params
+  const { correctCount, missedProblemIds, masteredProblemIds } = route.params
   const allProblems = getAllProblems()
   const missedProblems = allProblems.filter((p) => missedProblemIds.includes(p.id))
+  const masteredProblems = allProblems.filter((p) => masteredProblemIds.includes(p.id))
 
   return (
     <View style={styles.container}>
       <Text testID="correct-count">{correctCount} / 10</Text>
+      {masteredProblems.length > 0 && (
+        <View testID="mastered-section">
+          <Text>苦手克服！</Text>
+          <FlatList
+            data={masteredProblems}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <Text>{item.question}</Text>}
+          />
+        </View>
+      )}
       <FlatList
         data={missedProblems}
         keyExtractor={(item) => item.id}

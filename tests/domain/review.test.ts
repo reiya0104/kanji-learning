@@ -1,4 +1,4 @@
-import { shouldReview, updateRecord, createInitialRecord } from '../../src/domain/review'
+import { shouldReview, updateRecord, createInitialRecord, isJustMastered } from '../../src/domain/review'
 import type { ReviewRecord } from '../../src/domain/review'
 
 const baseRecord: ReviewRecord = {
@@ -52,5 +52,37 @@ describe('updateRecord', () => {
     const updated = updateRecord(record, false)
     expect(updated.missCount).toBe(2)
     expect(updated.consecutiveCorrect).toBe(0)
+  })
+})
+
+describe('isJustMastered', () => {
+  it('苦手あり・consecutiveCorrect が 1→2 になったとき true を返す', () => {
+    const before = { ...baseRecord, missCount: 1, consecutiveCorrect: 1 }
+    const after  = { ...baseRecord, missCount: 1, consecutiveCorrect: 2 }
+    expect(isJustMastered(before, after)).toBe(true)
+  })
+
+  it('before がすでに consecutiveCorrect >= 2 のとき false を返す（解除済み）', () => {
+    const before = { ...baseRecord, missCount: 1, consecutiveCorrect: 2 }
+    const after  = { ...baseRecord, missCount: 1, consecutiveCorrect: 3 }
+    expect(isJustMastered(before, after)).toBe(false)
+  })
+
+  it('after.consecutiveCorrect が 2 未満のとき false を返す', () => {
+    const before = { ...baseRecord, missCount: 1, consecutiveCorrect: 0 }
+    const after  = { ...baseRecord, missCount: 1, consecutiveCorrect: 1 }
+    expect(isJustMastered(before, after)).toBe(false)
+  })
+
+  it('missCount が 0（苦手なし）のとき false を返す', () => {
+    const before = { ...baseRecord, missCount: 0, consecutiveCorrect: 1 }
+    const after  = { ...baseRecord, missCount: 0, consecutiveCorrect: 2 }
+    expect(isJustMastered(before, after)).toBe(false)
+  })
+
+  it('1回正解 → 1回不正解ではフラグが解除されない', () => {
+    const afterCorrect = updateRecord({ ...baseRecord, missCount: 1, consecutiveCorrect: 0 }, true)
+    const afterMiss    = updateRecord(afterCorrect, false)
+    expect(isJustMastered(afterCorrect, afterMiss)).toBe(false)
   })
 })
