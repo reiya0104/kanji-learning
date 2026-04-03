@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import type { Problem } from '../domain/problem'
+import { FONTS } from '../constants/fonts'
 
 export type Feedback = {
   isCorrect: boolean
@@ -69,6 +70,7 @@ const styles = StyleSheet.create({
     fontSize: 64,
     fontWeight: 'bold',
     marginBottom: 48,
+    fontFamily: FONTS.bold,
   },
   choices: {
     width: '100%',
@@ -82,6 +84,7 @@ const styles = StyleSheet.create({
   },
   choiceText: {
     fontSize: 20,
+    fontFamily: FONTS.regular,
   },
   feedbackContainer: {
     width: '100%',
@@ -99,6 +102,7 @@ const styles = StyleSheet.create({
   feedbackText: {
     fontSize: 20,
     fontWeight: 'bold',
+    fontFamily: FONTS.bold,
   },
   feedbackTextCorrect: {
     color: '#155724',
@@ -110,6 +114,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#721c24',
     marginTop: 8,
+    fontFamily: FONTS.regular,
   },
   nextButton: {
     backgroundColor: '#007AFF',
@@ -123,5 +128,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+    fontFamily: FONTS.bold,
   },
 })

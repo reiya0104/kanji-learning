@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import type { HomeScreenProps } from '../navigation/types'
+import { FONTS } from '../constants/fonts'
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   return (
@@ -18,7 +19,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 32 },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 32, fontFamily: FONTS.bold },
   button: { backgroundColor: '#4A90E2', borderRadius: 8, padding: 16 },
-  buttonText: { color: '#fff', fontSize: 18 },
+  buttonText: { color: '#fff', fontSize: 18, fontFamily: FONTS.regular },
 })

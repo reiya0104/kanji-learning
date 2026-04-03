@@ -15,6 +15,7 @@
     "build:e2e": "detox build -c android.emu.debug"
   },
   "dependencies": {
+    "@expo-google-fonts/noto-sans-jp": "^0.4.3",
     "@react-navigation/native": "^7.2.0",
     "@react-navigation/native-stack": "^7.14.7",
     "expo": "~54.0.0",

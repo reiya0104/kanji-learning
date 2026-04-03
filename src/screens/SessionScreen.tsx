@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
+import { FONTS } from '../constants/fonts'
 import { isCorrect } from '../domain/answer'
 import type { Problem } from '../domain/problem'
 import { getAllProblems } from '../infrastructure/problemRepository'
@@ -55,7 +56,7 @@ export default function SessionScreen({ navigation }: SessionScreenProps) {
         {currentIndex + 1} / {problems.length}
       </Text>
       {reviewProblemIds.has(currentProblem.id) && (
-        <Text testID="review-badge">復習</Text>
+        <Text testID="review-badge" style={{ fontFamily: FONTS.regular }}>復習</Text>
       )}
       <ProblemScreen
         problem={currentProblem}
@@ -69,5 +70,5 @@ export default function SessionScreen({ navigation }: SessionScreenProps) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  progress: { textAlign: 'center', padding: 16, fontSize: 16 },
+  progress: { textAlign: 'center', padding: 16, fontSize: 16, fontFamily: FONTS.regular },
 })
